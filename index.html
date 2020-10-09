@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - Tile Game</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+<style>
+  
+  @import url(https://fonts.googleapis.com/css?family=Luckiest+Guy);
+
+body{
+  height:100%;
+  overflow:hidden;
+  background: radial-gradient(ellipse at center, rgba(240,249,255,1) 0%,rgba(203,235,255,1) 25%,rgba(161,219,255,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#a1dbff',GradientType=1 );
+  font-family: "Luckiest Guy", sans-serif;
+  letter-spacing:1px  
+}
+
+div{
+  box-sizing:border-box;
+}
+
+.wrapper{
+  width:520px;
+  margin:80px auto;
+  position:relative;
+}
+
+.gameover{
+  box-sizing:border-box;
+  padding:70px 0 0 0;
+  width:362px;
+  height:327px;
+  position:absolute;
+  top:0;
+  left:-6px;
+  background: rgba(0,0,0,0.5);
+  z-index:100;
+  margin-top:-35px;
+  border-radius:15px;
+  text-align:center;
+  display:none;
+  color:#fff;
+}
+
+.gameBoard{
+  width:350px;
+  position:relative;
+  float:left;
+}
+.gameBoard .row{
+  clear:both;
+}
+
+.sidebar{
+  width:140px;
+  height:285px;
+  position:relative;
+  float:right;
+}
+.scoreBoard{
+  width:110px;
+  height:170px;
+  margin-top:-34px;
+  padding:10px 10px 0;
+  text-align:right;
+  position:relative;
+  top:21px;
+  left:15px;
+  border-radius:8px;
+  background: rgba(0,0,0,0.8);
+}
+
+.lootracker li{
+	height:40px;
+}
+.lootracker li img{
+	height:30px;
+	position:relative;
+	top:8px;
+}
+
+/* Board Tiles */
+
+.gametile{
+  width:70px;
+  height:91px;  
+  float:left;
+  margin-top:-34px;
+  position:relative;
+  transition: top 200ms ease;
+  cursor: pointer;
+}
+
+.grass{
+  background: url('http://adrianpayne.me/game/assets/images/grass.png') no-repeat; 
+} 
+.grass:hover{
+ top:-10px; 
+}
+
+.dirt{
+  background: url('http://adrianpayne.me/game/assets/images/dirt.png') no-repeat;
+}
+
+.stone{
+  background: url('http://adrianpayne.me/game/assets/images/stone.png') no-repeat;
+}
+
+.water{
+  background: url('http://adrianpayne.me/game/assets/images/water.png') no-repeat;
+}
+
+.air{
+  background: url('http://adrianpayne.me/game/assets/images/air.png') no-repeat;
+}
+
+/* Game Elements */
+.gem{
+  width:46px;
+  height:49px;
+  position:relative;
+  left:12px;
+}
+
+.star{
+  width:51px;
+  height:51px;
+  position:relative;
+  left:3px;
+  top:-10px;
+}
+
+.chest{
+  width:55px;
+  height:68px;
+  position:relative;
+  left:8px;
+  top:-14px;
+}
+.chest-closed{
+  background: url('http://adrianpayne.me/game/assets/images/chest-closed.png') no-repeat 0 0;
+}
+.chest-open{
+  background: url('http://adrianpayne.me/game/assets/images/chest-open.png') no-repeat 0 0;
+}
+
+/* Buttons */
+.button{
+  width:80px;
+  padding: 5px 10px 5px 10px;
+  display:block;  
+  position:absolute;
+  left:17px;
+  bottom:38px;
+  line-height:20px;
+  font-size:18px;
+  text-decoration:none;
+  text-align:center;
+  color:#fff;
+  border-radius:8px;
+  border: 2px solid PeachPuff;
+  background: url('http://adrianpayne.me/game/assets/images/button.jpg') repeat;
+}
+.button:hover{
+  color:Khaki;
+  border-color: Sienna;
+}
+.button:active{
+  font-size:16px;
+  border-color: PeachPuff;
+}
+
+/* Text Styles */
+
+h2{
+  font-size:22px; 
+  color:#fff;
+}
+
+h3{
+  font-size:35px; 
+  color:#fff;
+  margin-bottom:5px;
+}
+
+.final-score{
+  font-size:55px; 
+  color:gold;
+}
+
+
+.score{
+  position:absolute;
+  font-size:26px;
+  color:gold;
+  right:10px;
+}
+
+.loot{
+  position:absolute;
+  font-size:22px;
+  color:#fff;
+  right:10px;
+  top:75px;
+}
+
+/* Avatar */
+.avatar{
+	position:absolute;
+	left:-85px;
+}
+.speech-bubble{
+  background: url('http://adrianpayne.me/game/assets/images/speech.png') no-repeat 0 0;
+  width:100px;
+  height:62px;
+  position:absolute;
+  text-align:center;
+  text-transform:uppercase;
+  font-size:20px;
+  line-height:56px;
+  left:-180px;
+  top:-30px;
+  opacity:0;
+}
+  
+</style>
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!--
+My first attempt at coding a game using html, css and jQuery. It's pretty random as far as games go. Just wanted to see if I could pull it off. Anyway... enjoy! :)
+
+Image assets are part of "Danc's Miraculously Flexible Game Prototyping Tiles"
+
+Sounds: Me :)
+-->
+
+<div class="wrapper">
+
+		  <img src="http://adrianpayne.me/game/assets/images/avatar.png" class="avatar" />
+		  <div class="speech-bubble"></div>
+		
+		  <div class="gameBoard">
+		
+		    <div class="gameover">
+				<h3>You scored</h3>
+				<span class="final-score"></span><br/>
+          <span>by @dazulu</span>
+		    </div>
+			
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+				
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+				
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+				
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+				
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+			<div class="gametile"></div>
+		  </div>
+		  <div class="sidebar">
+			  <div class="stone gametile"></div>
+			  <div class="stone gametile"></div>
+			  <div class="stone gametile"></div>
+			  <div class="stone gametile"></div>
+			  <div class="stone gametile"></div>
+			  <div class="stone gametile"></div>
+			  <div class="stone gametile"></div>
+			  <div class="stone gametile"></div>    
+			  <div class="stone gametile"></div>
+			  <div class="stone gametile"></div>
+			  <div class="scoreBoard">
+				<h2 class="fancy-text">Score</h2>
+				<span class="score fancy-text"></span>
+				<div class="loot">
+					<ul class="lootracker">
+            <li><span class="gemcount">0</span> x <img src="http://adrianpayne.me/game/assets/images/gem.png"/></li>
+						<li><span class="starcount">0</span> x <img src="http://adrianpayne.me/game/assets/images/star.png"/></li>
+					</ul>
+				</div>
+			  </div>
+			  <a href="javascript:void(0)" class="button fancy-text reset">Reset board</a>
+		  </div>
+		</div>
+
+		<!-- Preload Game Sounds -->
+		<audio preload="auto" id="pop-1" >
+		  <source src="http://adrianpayne.me/game/assets/sounds/pop1.mp3"></source>
+			Your browser says no sound for you :(
+		</audio>
+		<audio preload="auto" id="pop-2" >
+		  <source src="http://adrianpayne.me/game/assets/sounds/pop2.mp3"></source>
+		</audio>
+		<audio preload="auto" id="gemfind" >
+      <source src="http://adrianpayne.me/game/assets/sounds/gem.mp3"></source>
+		</audio>
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+  <script>
+    
+    var score = 0;
+var numTiles = 25;
+var tileCounter = 0;
+var chestCount = 0;
+var chestChance = 5;
+var gemChance = 58;
+var gemPoints = 500;
+var chestPoints = 1500;
+var gemcount = "";
+var starcount = "";
+var defaultTile = "grass";
+var newTile = "";
+var dirt = "dirt";
+var stone = "stone";
+var water = "water";
+var gemText = "Nice!";
+var chestText = "Wow!!";
+var startText = "Go!";
+var endText = "Yay!";
+
+$(document).ready(function(){
+
+  init(defaultTile,score);
+
+  $('.'+defaultTile).on('click',function(){
+    if($(this).hasClass(defaultTile)){
+	
+	  //get a % value of 100 for "drop rates"
+	  random = Math.floor(Math.random() * 100);
+      
+	  if(chestCount===1){
+		getGem($(this),random);
+	  }
+	  else{
+	    if(random <= chestChance){
+		  chest($(this));
+		}
+		else{
+		  getGem($(this),random);
+		}
+	  }
+	  
+    }
+	
+	if($('.off').length === 25 && $('.chest-closed').length === 0){
+		$('.gameover').show();
+		$('.final-score').text(score);
+    speechText(endText,3000);
+	}
+	
+  });
+  
+  $('.reset').on('click',function(){
+	$('.chest').remove();
+    $('.gameBoard .gametile').removeClass('dirt water stone off').addClass(defaultTile);
+    score=0;
+	  chestCount=0;
+    gemcount=0;
+    starcount=0;
+	$('.gemcount').text(0);
+	$('.starcount').text(0);
+    $('.score').text(score);
+	$('.final-score').text(score);
+	$('.gameover').hide();
+	speechText(startText,600);
+  });
+  
+});
+
+function init(defaultTile,score){
+  $('.gameBoard .gametile').addClass(defaultTile);
+  $('.score').text(score);
+}
+
+function getGem(tile){
+	if(random > chestChance && random <= (gemChance + chestChance)){
+	  gem(tile);
+	}
+	else{
+	  changeTile(tile,water);
+	  sndEffects(0);
+	}
+}
+ 
+function gem(tile) {  
+  changeTile(tile,dirt);
+  speechText(gemText,250);
+  sndEffects(1);  
+  scoreCalc(gemPoints);
+  gemcount++;
+  $('.gemcount').text(gemcount); 
+  $(tile).append("<img class='gem' src='http://adrianpayne.me/game/assets/images/gem.png' />");
+  $(tile).find('.gem').animate({top:"-30px",opacity:"0"},700);
+  setTimeout(function() {
+     $('img:last-child', tile).remove();
+  }, 800); 
+}
+
+function chest(tile) {  
+  changeTile(tile,stone);
+  $(tile).append("<div class='chest chest-closed'></div>");
+  chestCount = 1;
+  sndEffects(0);
+  
+  $(".chest").click(function(){
+	$(this).unbind();
+	$(this).addClass('chest-open').removeClass('chest-closed');
+	$(this).append("<img class='star' src='http://adrianpayne.me/game/assets/images/star.png' />");
+    $(this).find('.star').animate({top:"-40px",opacity:"0"},800);
+	$('.starcount').text(1); 
+	speechText(chestText,300);
+	sndEffects(1);
+	scoreCalc(chestPoints);
+	$(this).delay(200).fadeOut("slow");
+  });  
+}
+
+function changeTile(tile, type){
+  $(tile).removeClass(defaultTile).addClass(type).addClass("off");
+}
+
+function sndEffects(loot) {  
+  $("#pop-" + Math.ceil(Math.random() * 2))[0].play();
+  if(loot){
+	$("#gemfind")[0].play();  
+  }
+}
+
+function speechText(text,delay){
+  $('.speech-bubble').stop(true, false).animate({opacity:"1"},200);
+  $('.speech-bubble').text(text);
+  $('.speech-bubble').delay(delay).animate({opacity:"0"},40);
+}
+
+function scoreCalc(points) {
+  score += points;
+  $('.score').text(score); 
+}
+    
+  </script>
+
+</body>
+</html>
